@@ -11,8 +11,8 @@ services:
   - docker
 
 jdk:
-  - oraclejdk8
-#  - openjdk8
+# - oraclejdk8
+  - openjdk8
 
 cache:
   directories:
