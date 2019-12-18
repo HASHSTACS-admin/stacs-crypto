@@ -261,7 +261,9 @@ public class ECKey implements Serializable {
                 return ECKeyFactory.getInstance(SpongyCastleProvider.getInstance())
                     .generatePrivate(new ECPrivateKeySpec(priv, CURVE_SPEC));
             } catch (InvalidKeySpecException ex) {
-                throw new AssertionError("Assumed correct key spec statically");
+                logger.error("priv:{}",priv);
+                logger.error("privateKeyFromBigInteger has error",ex);
+                throw new AssertionError("Assumed correct key spec statically",ex);
             }
         }
     }
