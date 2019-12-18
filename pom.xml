@@ -2,15 +2,59 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>stacs-native</artifactId>
-        <groupId>io.stacs.nav</groupId>
-        <version>4.0.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-
+    <groupId>io.stacs.nav</groupId>
     <artifactId>stacs-crypto</artifactId>
+    <modelVersion>4.0.0</modelVersion>
     <version>4.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+
+    <name>stacs-crypto</name>
+    <description>stacs-crypto</description>
+    <url>https://github.com/hashstacs-inc/stacs-crypto</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:hashstacs-inc/stacs-crypto.git</connection>
+        <developerConnection>scm:git:git@github.com:hashstacs-inc/stacs-crypto.git</developerConnection>
+        <url>http://github.com/hashstacs-inc/stacs-crypto/tree/master</url>
+        <tag>HEAD</tag>
+    </scm>
+    <developers>
+        <developer>
+            <name>swiftledger</name>
+            <email>swiftledger@primeledger.cn</email>
+            <organization>https://www.stacs.io</organization>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <name>lichengcai</name>
+            <email>lichengcai@primeledger.cn</email>
+            <organization>https://www.stacs.io</organization>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+
+    <properties>
+        <spring-boot.version>2.1.9.RELEASE</spring-boot.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
