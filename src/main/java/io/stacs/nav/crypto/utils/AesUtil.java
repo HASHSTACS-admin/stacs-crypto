@@ -21,8 +21,7 @@ import java.security.SecureRandom;
 
 public class AesUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(AesUtil.class);
-
-    public static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+    public static final String ALGORITHM = "AES/ECB/ISO10126Padding";
     public static final String AES = "AES";
 
     public static byte[] generateKey() {
@@ -39,10 +38,14 @@ public class AesUtil {
         return null;
     }
 
+    public static String generateHexKey() {
+        return Hex.toHexString(generateKey());
+    }
+
     public static byte[] encrypt(byte[] content, byte[] keys) throws GeneralSecurityException {
         SecretKey key = new SecretKeySpec(keys, AES);
         Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(1, key);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] result = cipher.doFinal(content);
         return result;
     }
@@ -50,7 +53,7 @@ public class AesUtil {
     public static byte[] decrypt(byte[] content, byte[] keys) throws GeneralSecurityException {
         SecretKey key = new SecretKeySpec(keys, AES);
         Cipher cipher = Cipher.getInstance(ALGORITHM);
-        cipher.init(2, key);
+        cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] result = cipher.doFinal(content);
         return result;
     }
