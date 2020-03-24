@@ -1,190 +1,78 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
 package io.stacs.nav.crypto.utils;
 
 import com.google.common.base.Charsets;
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.util.encoders.Base64;
+import org.spongycastle.util.encoders.Hex;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
-/**
- * @desc Aes加密使用的工具类
- * @author WangQuanzhou
- * @date 2018/2/24 15:53
- */  
 public class AesUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(AesUtil.class);
 
-    /**
-     * @param content  需要加密的内容
-     * @param password 加密密码 16bytes长度
-     * @return 返回是加密的bytes流
-     */
-    public static byte[] encryptToBytes(String content, String password) {
+    public static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+    public static final String AES = "AES";
+
+    public static byte[] generateKey() {
         try {
-            SecretKey key = new SecretKeySpec(password.getBytes(), "AES");
-            // 创建密码器
-            Cipher cipher = Cipher.getInstance("AES");
-            byte[] byteContent = content.getBytes("utf-8");
-            // 初始化
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] result = cipher.doFinal(byteContent);
-            // 加密
-            return result;
-        } catch (Exception e) {
-            LOGGER.error("Aes encrypt failed {} " + e.getMessage(), e);
-            return null;
+            KeyGenerator kgen = KeyGenerator.getInstance(AES);
+            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+            random.setSeed("STACS".getBytes(Charsets.UTF_8));
+            kgen.init(128, random);
+            SecretKey original_key = kgen.generateKey();
+            return original_key.getEncoded();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
-    }
-
-    /**
-     * 解密
-     *
-     * @param content  待解密内容
-     * @param password 解密密钥
-     * @return
-     */
-    public static byte[] decryptToBytes(byte[] content, String password) {
-        try {
-            SecretKey key = new SecretKeySpec(password.getBytes(), "AES");
-            // 创建密码器
-            Cipher cipher = Cipher.getInstance("AES");
-            // 初始化
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] result = cipher.doFinal(content);
-            // 加密
-            return result;
-        } catch (Exception e) {
-            LOGGER.error("Aes decrypt failed {}",e.getMessage(), e);
-            return null;
-        }
-    }
-
-    /**
-     * 生成加密文件
-     *
-     * @param content
-     * @param password
-     * @param filePath
-     */
-    public static void encryptToFile(String content, String password, String filePath) {
-        File file = new File(filePath);
-        OutputStream output = null;
-        BufferedOutputStream bufferedOutput = null;
-        try {
-            output = new FileOutputStream(file);
-            bufferedOutput = new BufferedOutputStream(output);
-            //加密形成文件
-            byte[] bytes = encryptToBytes(content, password);
-            bufferedOutput.write(bytes);
-        } catch (Exception e) {
-            LOGGER.error("EncryptFile failed " + e.getMessage(), e);
-        } finally {
-            if (bufferedOutput != null) {
-                try {
-                    bufferedOutput.close();
-                } catch (IOException e) {
-                    LOGGER.error("BufferedOutput closed failed " + e.getMessage(), e);
-                }
-            }
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    LOGGER.error("FileOutput closed failed " + e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    /**
-     * 从加密文件解密成为string
-     *
-     * @param password
-     * @param filePath
-     * @return
-     */
-    public static String decryptFromFile(String password, String filePath) {
-        File file = new File(filePath);
-
-        try {
-            InputStream input = new FileInputStream(file);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-            byte[] b = new byte[1000];
-            int n;
-            while ((n = input.read(b)) != -1) {
-                bos.write(b, 0, n);
-            }
-            input.close();
-            bos.close();
-            byte[] contentBytes = bos.toByteArray();
-            //解密成byte
-            decryptToBytes(contentBytes, password);
-            return new String(decryptToBytes(contentBytes, password));
-        } catch (Exception e) {
-            LOGGER.error("DecryptFromFile failed " + e.getMessage(), e);
-        }
-
         return null;
-
     }
 
-    /**
-     * BASE64解密
-     *
-     * @param key
-     * @return
-     * @throws Exception
-     */
-    public static byte[] decryptBASE64(String key) throws Exception {
-        return Base64.decodeBase64(key);
+    public static byte[] encrypt(byte[] content, byte[] keys) throws GeneralSecurityException {
+        SecretKey key = new SecretKeySpec(keys, AES);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(1, key);
+        byte[] result = cipher.doFinal(content);
+        return result;
     }
 
-    /**
-     * BASE64加密
-     *
-     * @param key
-     * @return
-     * @throws Exception
-     */
-    public static String encryptBASE64(byte[] key) throws Exception {
-        return Base64.encodeBase64String(key);
+    public static byte[] decrypt(byte[] content, byte[] keys) throws GeneralSecurityException {
+        SecretKey key = new SecretKeySpec(keys, AES);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(2, key);
+        byte[] result = cipher.doFinal(content);
+        return result;
     }
 
-    public static String encryptToString(String content, String password) {
-        byte[] encryptBase64Bytes = encryptToBytes(content, password);
-        if (null == encryptBase64Bytes) {
+    public static byte[] encrypt(String content, String password) throws GeneralSecurityException {
+        return encrypt(content.getBytes(Charsets.UTF_8), Hex.decode(password));
+    }
+
+    public static byte[] decrypt(String content, String password) throws GeneralSecurityException {
+        return decrypt(Base64.decode(content), Hex.decode(password));
+    }
+
+    public static String encryptToString(String content, String password) throws GeneralSecurityException {
+        byte[] encryptBytes = encrypt(content, password);
+        if (null == encryptBytes) {
             return null;
         }
-        String encryptString = null;
-        try {
-            encryptString = encryptBASE64(encryptBase64Bytes);
-        } catch (Exception e) {
-            LOGGER.error("Base64 encrypt failed，encrypt data:{}" + content, e);
-        }
-        return encryptString;
+        return Base64.toBase64String(encryptBytes);
     }
 
-    public static String decryptToString(String content, String password) {
-        byte[] decryptBase64Bytes = null;
-        try {
-            decryptBase64Bytes = decryptBASE64(content);
-        } catch (Exception e) {
-            LOGGER.error("Base64 decrypt failed，decrypt data:{}" + content, e);
-        }
-        if (null == decryptBase64Bytes) {
-            return null;
-        }
-
-        byte[] decryptBytes = decryptToBytes(decryptBase64Bytes, password);
-        if (null == decryptBytes) {
-            return null;
-        }
-        return new String(decryptBytes,Charsets.UTF_8);
+    public static String decryptToString(String content, String password) throws GeneralSecurityException {
+        byte[] decryptBytes = decrypt(content, password);
+        return null == decryptBytes ? null : new String(decryptBytes, Charsets.UTF_8);
     }
-
-
 }
