@@ -6,10 +6,10 @@
 package io.stacs.nav.crypto.utils;
 
 import com.google.common.base.Charsets;
+import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.util.encoders.Base64;
-import org.spongycastle.util.encoders.Hex;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

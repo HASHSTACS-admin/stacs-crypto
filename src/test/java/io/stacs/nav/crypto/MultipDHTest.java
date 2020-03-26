@@ -4,11 +4,11 @@ import io.stacs.nav.crypto.jce.ECKeyPointAgreement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
-import org.spongycastle.crypto.CipherParameters;
-import org.spongycastle.crypto.params.ECPrivateKeyParameters;
-import org.spongycastle.math.ec.ECPoint;
-import org.spongycastle.util.encoders.Hex;
 
 import java.util.ArrayList;
 import java.util.Arrays;

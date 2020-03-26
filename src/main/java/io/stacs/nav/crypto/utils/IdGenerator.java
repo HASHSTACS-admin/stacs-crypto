@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import org.spongycastle.util.encoders.Hex;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

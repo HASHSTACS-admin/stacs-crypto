@@ -1,10 +1,18 @@
 package io.stacs.nav.crypto;
 
+import com.google.common.base.Charsets;
+import io.stacs.nav.crypto.jce.SpongyCastleProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
+import org.bouncycastle.jce.spec.IESParameterSpec;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
-import org.spongycastle.util.encoders.Hex;
 
-import java.security.SignatureException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.*;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,7 +26,8 @@ import static org.junit.Assert.assertTrue;
         "04eb1a1d24b2456b600b5ba594f9783a6d51bec678ef57cdb5c7127d107a956c0240e89d41bfe164e8ef7a21f43f4c16e6a46874d9835929422b3264602186c79c";
 
     @Test public void signTest() throws SignatureException {
-        String message = "1f8cf317-ef14-42be-90cc-d5547084b519ContractBD_BCONTRACT_ISSUEnullnull54bd202186dd2de178ea220a875136a9dea736ce18a93960ed0ad0ee6cc4206abcfa90cc76befa9eBnullCREATE_CONTRACT";
+        String message =
+            "1f8cf317-ef14-42be-90cc-d5547084b519ContractBD_BCONTRACT_ISSUEnullnull54bd202186dd2de178ea220a875136a9dea736ce18a93960ed0ad0ee6cc4206abcfa90cc76befa9eBnullCREATE_CONTRACT";
         StacsECKey ecKey = StacsECKey.fromPrivate(Hex.decode(privateKey));
         String signMessage = ecKey.signMessage(message);
         System.out.println("signMessage = " + signMessage);

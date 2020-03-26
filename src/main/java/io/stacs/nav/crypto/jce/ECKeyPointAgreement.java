@@ -1,8 +1,8 @@
 package io.stacs.nav.crypto.jce;
 
-import org.spongycastle.crypto.CipherParameters;
-import org.spongycastle.crypto.params.ECPrivateKeyParameters;
-import org.spongycastle.math.ec.ECPoint;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.math.ec.ECPoint;
 
 /**
  * @author suimi

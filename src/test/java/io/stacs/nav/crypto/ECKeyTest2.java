@@ -8,11 +8,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.stacs.nav.crypto.ECKey.ECDSASignature;
 import io.stacs.nav.crypto.jce.SpongyCastleProvider;
 import io.stacs.nav.crypto.utils.HashUtil;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.IOException;
 import java.math.BigInteger;

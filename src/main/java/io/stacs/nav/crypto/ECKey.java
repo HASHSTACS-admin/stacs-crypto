@@ -36,32 +36,32 @@ import io.stacs.nav.crypto.jce.*;
 import io.stacs.nav.crypto.utils.BIUtil;
 import io.stacs.nav.crypto.utils.ByteUtil;
 import io.stacs.nav.crypto.utils.HashUtil;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.DLSequence;
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.asn1.x9.X9IntegerConverter;
+import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.engines.AESEngine;
+import org.bouncycastle.crypto.modes.SICBlockCipher;
+import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
+import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.jce.spec.ECPrivateKeySpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
+import org.bouncycastle.math.ec.ECAlgorithms;
+import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.BigIntegers;
+import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.asn1.ASN1InputStream;
-import org.spongycastle.asn1.ASN1Integer;
-import org.spongycastle.asn1.DLSequence;
-import org.spongycastle.asn1.sec.SECNamedCurves;
-import org.spongycastle.asn1.x9.X9ECParameters;
-import org.spongycastle.asn1.x9.X9IntegerConverter;
-import org.spongycastle.crypto.agreement.ECDHBasicAgreement;
-import org.spongycastle.crypto.digests.SHA256Digest;
-import org.spongycastle.crypto.engines.AESEngine;
-import org.spongycastle.crypto.modes.SICBlockCipher;
-import org.spongycastle.crypto.params.*;
-import org.spongycastle.crypto.signers.ECDSASigner;
-import org.spongycastle.crypto.signers.HMacDSAKCalculator;
-import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
-import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
-import org.spongycastle.jce.spec.ECParameterSpec;
-import org.spongycastle.jce.spec.ECPrivateKeySpec;
-import org.spongycastle.jce.spec.ECPublicKeySpec;
-import org.spongycastle.math.ec.ECAlgorithms;
-import org.spongycastle.math.ec.ECCurve;
-import org.spongycastle.math.ec.ECPoint;
-import org.spongycastle.util.BigIntegers;
-import org.spongycastle.util.encoders.Base64;
-import org.spongycastle.util.encoders.Hex;
 
 import javax.crypto.KeyAgreement;
 import java.io.IOException;
@@ -247,35 +247,35 @@ public class ECKey implements Serializable {
         this.pub = pub;
     }
 
-    public static PrivateKey privateKeyFromBytes(byte[] privKeyBytes) {
+    public static ECPrivateKey privateKeyFromBytes(byte[] privKeyBytes) {
         return privateKeyFromBigInteger(new BigInteger(1, privKeyBytes));
     }
 
     /* Convert a BigInteger into a PrivateKey object
      */
-    public static PrivateKey privateKeyFromBigInteger(BigInteger priv) {
+    public static ECPrivateKey privateKeyFromBigInteger(BigInteger priv) {
         if (priv == null) {
             return null;
         } else {
             try {
-                return ECKeyFactory.getInstance(SpongyCastleProvider.getInstance())
+                return (ECPrivateKey)ECKeyFactory.getInstance(SpongyCastleProvider.getInstance())
                     .generatePrivate(new ECPrivateKeySpec(priv, CURVE_SPEC));
             } catch (InvalidKeySpecException ex) {
-                logger.error("priv:{}",priv);
-                logger.error("privateKeyFromBigInteger has error",ex);
-                throw new AssertionError("Assumed correct key spec statically",ex);
+                logger.error("priv:{}", priv);
+                logger.error("privateKeyFromBigInteger has error", ex);
+                throw new AssertionError("Assumed correct key spec statically", ex);
             }
         }
     }
 
     /* Convert to a PublicKey object
      */
-    public static PublicKey publicKeyFromBytes(byte[] pubKeyBytes) {
+    public static ECPublicKey publicKeyFromBytes(byte[] pubKeyBytes) {
         if (pubKeyBytes == null) {
             return null;
         } else {
             try {
-                return ECKeyFactory.getInstance(SpongyCastleProvider.getInstance())
+                return (ECPublicKey)ECKeyFactory.getInstance(SpongyCastleProvider.getInstance())
                     .generatePublic(new ECPublicKeySpec(CURVE.getCurve().decodePoint(pubKeyBytes), CURVE_SPEC));
             } catch (InvalidKeySpecException ex) {
                 throw new AssertionError("Assumed correct key spec statically");
@@ -389,34 +389,6 @@ public class ECKey implements Serializable {
         return new ECKey(null, CURVE.getCurve().decodePoint(pub));
     }
 
-    /**
-     * Returns a copy of this key, but with the public point represented in uncompressed form. Normally you would
-     * never need this: it's for specialised scenarios or when backwards compatibility in encoded form is necessary.
-     *
-     * @return -
-     * @deprecated per -point compression property will be removed in Bouncy Castle
-     */
-    public ECKey decompress() {
-        if (!pub.isCompressed()) {
-            return this;
-        } else {
-            return new ECKey(this.provider, this.privKey, decompressPoint(pub));
-        }
-    }
-
-    /**
-     * Compress ec key.
-     *
-     * @return the ec key
-     * @deprecated per -point compression property will be removed in Bouncy Castle
-     */
-    public ECKey compress() {
-        if (pub.isCompressed()) {
-            return this;
-        } else {
-            return new ECKey(this.provider, this.privKey, compressPoint(pub));
-        }
-    }
 
     /**
      * Returns true if this key doesn't have access to private key bytes. This may be because it was never
@@ -566,13 +538,14 @@ public class ECKey implements Serializable {
         }
     }
 
-    /**
-     * Returns whether this key is using the compressed form or not. Compressed pubkeys are only 33 bytes, not 64.
-     *
-     * @return -
-     */
-    public boolean isCompressed() {
-        return pub.isCompressed();
+    public PrivateKey getPrivateKey() {
+        return privKey;
+    }
+
+    public PublicKey getPublicKey() throws InvalidKeySpecException {
+        return ECKeyFactory.getInstance(SpongyCastleProvider.getInstance())
+            .generatePublic(new ECPublicKeySpec(pub, CURVE_SPEC));
+
     }
 
     @Override public String toString() {

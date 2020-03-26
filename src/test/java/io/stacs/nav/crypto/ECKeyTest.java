@@ -2,13 +2,13 @@ package io.stacs.nav.crypto;
 
 import io.stacs.nav.crypto.jce.ECKeyAgreement;
 import io.stacs.nav.crypto.jce.ECKeyPointAgreement;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
-import org.spongycastle.crypto.CipherParameters;
-import org.spongycastle.crypto.agreement.ECDHBasicAgreement;
-import org.spongycastle.crypto.params.ECPrivateKeyParameters;
-import org.spongycastle.crypto.params.ECPublicKeyParameters;
-import org.spongycastle.math.ec.ECPoint;
-import org.spongycastle.util.encoders.Hex;
 
 import javax.crypto.KeyAgreement;
 import java.math.BigInteger;

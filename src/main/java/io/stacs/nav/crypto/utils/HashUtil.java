@@ -34,7 +34,7 @@ import static java.util.Arrays.copyOfRange;
 public class HashUtil {
 
     private static final String HASH_256_ALGORITHM_NAME = "ETH-KECCAK-256";
-    private static final String CRYPTO_PROVIDER_NAME = "SC";
+    private static final String CRYPTO_PROVIDER_NAME = "BC";
 
     private static final Provider CRYPTO_PROVIDER;
 
