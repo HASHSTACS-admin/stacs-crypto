@@ -28,7 +28,6 @@ public class AesUtil {
         try {
             KeyGenerator kgen = KeyGenerator.getInstance(AES);
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-            random.setSeed("STACS".getBytes(Charsets.UTF_8));
             kgen.init(128, random);
             SecretKey original_key = kgen.generateKey();
             return original_key.getEncoded();
