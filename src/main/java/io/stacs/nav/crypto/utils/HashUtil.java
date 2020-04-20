@@ -59,6 +59,17 @@ public class HashUtil {
         }
     }
 
+    public static byte[] twiceSha256(byte[] input) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+        digest.update(input, 0, input.length);
+        return digest.digest(digest.digest());
+    }
+
     /**
      * Sha 3 byte [ ].
      *

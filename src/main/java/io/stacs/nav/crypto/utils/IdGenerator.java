@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import com.google.common.primitives.Longs;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.security.MessageDigest;
@@ -45,21 +46,14 @@ public class IdGenerator {
         return ppIdHashCode.toString();
     }
 
-    public static String generate64TxId(String originalTxId) {
+    public static String generate40TxId(String originalTxId) {
         byte[] txIdBytes = originalTxId.getBytes();
-        byte[] txIdHash256 = twiceSha256(txIdBytes);
-        return new String(Hex.encode(txIdHash256));
-    }
-
-    public static byte[] twiceSha256(byte[] input) {
-        MessageDigest digest = null;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-        digest.update(input, 0, input.length);
-        return digest.digest(digest.digest());
+        byte[] bytes = Longs.toByteArray(System.currentTimeMillis());
+        byte[] txIdHash256 = HashUtil.twiceSha256(txIdBytes);
+        byte[] result = new byte[20];
+        System.arraycopy(bytes, 0, result, 0, bytes.length);
+        System.arraycopy(txIdHash256, 0, result, bytes.length, 20 - bytes.length);
+        return Hex.toHexString(result);
     }
 
     /**
